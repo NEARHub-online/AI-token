@@ -31,7 +31,7 @@ pub struct Contract {
     metadata: LazyOption<FungibleTokenMetadata>,
 }
 
-const DATA_IMAGE_SVG_NEAR_ICON: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 288 288'%3E%3Cg id='l' data-name='l'%3E%3Cpath d='M187.58,79.81l-30.1,44.69a3.2,3.2,0,0,0,4.75,4.2L191.86,103a1.2,1.2,0,0,1,2,.91v80.46a1.2,1.2,0,0,1-2.12.77L102.18,77.93A15.35,15.35,0,0,0,90.47,72.5H87.34A15.34,15.34,0,0,0,72,87.84V201.16A15.34,15.34,0,0,0,87.34,216.5h0a15.35,15.35,0,0,0,13.08-7.31l30.1-44.69a3.2,3.2,0,0,0-4.75-4.2L96.14,186a1.2,1.2,0,0,1-2-.91V104.61a1.2,1.2,0,0,1,2.12-.77l89.55,107.23a15.35,15.35,0,0,0,11.71,5.43h3.13A15.34,15.34,0,0,0,216,201.16V87.84A15.34,15.34,0,0,0,200.66,72.5h0A15.35,15.35,0,0,0,187.58,79.81Z'/%3E%3C/g%3E%3C/svg%3E";
+const DATA_IMAGE_SVG_NEAR_ICON: &str = "data:image/svg+xml,%3Csvg id='Layer_2' data-name='Layer 2' xmlns='http://www.w3.org/2000/svg' width='26.7' height='26.7' viewBox='0 0 26.7 26.7'%3E%3Cdefs%3E%3Cstyle%3E.cls-1, .cls-2 {fill: #fff;}.cls-2 {font-family: ArialRoundedMTBold, 'Arial Rounded MT Bold';font-size: 10.06px;}%3C/style%3E%3C/defs%3E%3Cg id='Layer_3' data-name='Layer 3'%3E%3Ccircle cx='13.35' cy='13.35' r='13.35'/%3E%3Cpath class='cls-1' d='M2.52,13.46S7.34,6.95,13.45,6.95s10.72,6.51,10.72,6.51c0,0-4.74,6.6-10.82,6.6S2.52,13.46,2.52,13.46Z'/%3E%3Ccircle cx='13.35' cy='13.53' r='6.12'/%3E%3Ctext class='cls-2' transform='translate(9.77 16.63)'%3E%3Ctspan x='0' y='0'%3EA%3C/tspan%3E%3C/text%3E%3C/g%3E%3C/svg%3E";
 
 #[near_bindgen]
 impl Contract {
@@ -44,8 +44,8 @@ impl Contract {
             total_supply,
             FungibleTokenMetadata {
                 spec: FT_METADATA_SPEC.to_string(),
-                name: "Example NEAR fungible token".to_string(),
-                symbol: "EXAMPLE".to_string(),
+                name: "NEAR Hub AI utility token".to_string(),
+                symbol: "AI".to_string(),
                 icon: Some(DATA_IMAGE_SVG_NEAR_ICON.to_string()),
                 reference: None,
                 reference_hash: None,
