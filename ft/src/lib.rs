@@ -22,11 +22,13 @@ use near_contract_standards::fungible_token::FungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
 use near_sdk::json_types::U128;
-use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PromiseOrValue};
+use near_sdk::{assert_one_yocto, env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PromiseOrValue};
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
+    owner_id: AccountId,
+    conversion_rate: u128,
     token: FungibleToken,
     metadata: LazyOption<FungibleTokenMetadata>,
 }
@@ -65,6 +67,8 @@ impl Contract {
         assert!(!env::state_exists(), "Already initialized");
         metadata.assert_valid();
         let mut this = Self {
+            owner_id: owner_id.clone(),
+            conversion_rate: 10_000_000_000_000_000,
             token: FungibleToken::new(b"a".to_vec()),
             metadata: LazyOption::new(b"m".to_vec(), Some(&metadata)),
         };
@@ -77,6 +81,34 @@ impl Contract {
         }
         .emit();
         this
+    }
+
+    pub fn get_convertion_rate(&mut self) -> u128 {
+        self.conversion_rate
+    }
+
+    pub fn get_owner(&mut self) -> &AccountId {
+        &self.owner_id
+    }
+
+    #[payable]
+    pub fn set_convertion_rate(&mut self, conversion_rate: u128) {
+        assert_one_yocto();
+        assert!(env::signer_account_id() == self.owner_id, "Only the owner can change the conversion_rate");
+        log!("Changing conversion rate from {} with {}", self.conversion_rate, conversion_rate);
+        self.conversion_rate = conversion_rate;
+    }
+
+    #[payable]
+    pub fn convert_tokens(&mut self) {
+        let deposit = env::attached_deposit();
+        assert!(deposit > 0, "Attached deposit must be greater than 0");
+        let tokens_amount = deposit.checked_mul(self.conversion_rate);
+        near_contract_standards::fungible_token::events::FtMint {
+            owner_id: &env::signer_account_id(),
+            amount: &U128::from(tokens_amount.unwrap_or(0u128)),
+            memo: Some("Mint ok!"),
+        }.emit();
     }
 
     fn on_account_closed(&mut self, account_id: AccountId, balance: Balance) {
