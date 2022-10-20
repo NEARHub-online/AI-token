@@ -68,7 +68,7 @@ impl Contract {
         metadata.assert_valid();
         let mut this = Self {
             owner_id: owner_id.clone(),
-            conversion_rate: 10_000_000_000_000_000,
+            conversion_rate: 10,
             token: FungibleToken::new(b"a".to_vec()),
             metadata: LazyOption::new(b"m".to_vec(), Some(&metadata)),
         };
@@ -83,11 +83,11 @@ impl Contract {
         this
     }
 
-    pub fn get_convertion_rate(&mut self) -> u128 {
+    pub fn get_convertion_rate(&self) -> u128 {
         self.conversion_rate
     }
 
-    pub fn get_owner(&mut self) -> &AccountId {
+    pub fn get_owner(&self) -> &AccountId {
         &self.owner_id
     }
 
@@ -101,9 +101,14 @@ impl Contract {
 
     #[payable]
     pub fn convert_tokens(&mut self) {
-        let deposit = env::attached_deposit();
+        let deposit = u128::from(env::attached_deposit());
         assert!(deposit > 0, "Attached deposit must be greater than 0");
         let tokens_amount = deposit.checked_mul(self.conversion_rate);
+        log!("Converting {} NEAR with to {} AI with convertion rate {}", deposit, tokens_amount.unwrap_or(0u128), self.conversion_rate);
+        if self.token.accounts.get(&env::signer_account_id()) == None {
+            self.token.internal_register_account(&env::signer_account_id());
+        }
+        self.token.internal_deposit(&env::signer_account_id(), tokens_amount.unwrap_or(0u128));
         near_contract_standards::fungible_token::events::FtMint {
             owner_id: &env::signer_account_id(),
             amount: &U128::from(tokens_amount.unwrap_or(0u128)),
